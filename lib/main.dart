@@ -4,92 +4,116 @@ void main() {
   runApp(MyApp());
 }
 
+class Product {
+  final String name;
+  final String description;
+  final double price;
+
+  Product(this.name, this.description, this.price);
+}
+
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false, 
       theme: ThemeData(
-        scaffoldBackgroundColor: Colors.lightBlue[50], 
+        scaffoldBackgroundColor: const Color.fromARGB(255, 246, 244, 245), 
       ),
-      home: HomeScreen(),
+      home: ProductListScreen(),
     );
   }
 }
 
-class HomeScreen extends StatelessWidget {
+
+class ProductListScreen extends StatelessWidget {
+  final List<Product> products = [
+    Product("Teddy Bear", "Soft and cute teddy bear for kids", 25),
+    Product("Toy Car", "Small toy car with bright colors", 15),
+    Product("Building Blocks", "Colorful blocks for creative play", 30),
+    Product("Kids Backpack", "Lightweight backpack for school", 40),
+    Product("Drawing Kit", "Crayons and coloring book set", 20),
+    Product("Puzzle Game", "Fun puzzle to improve thinking skills", 18),
+    Product("Baby Doll", "Cute doll for imaginative play", 22),
+  ];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Home Screen"),
-        backgroundColor: const Color.fromARGB(255, 110, 153, 188), 
+        title: Text("Kids Products"),
+        backgroundColor: const Color.fromARGB(255, 233, 140, 171), // 🎨 لون AppBar
       ),
-      body: Center(
-        child: ElevatedButton(
-          style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.blue,
-            padding: EdgeInsets.symmetric(horizontal: 30, vertical: 15),
-          ),
-          child: Text("Go to Details"),
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => DetailScreen()),
-            );
-          },
-        ),
+      body: ListView.builder(
+        itemCount: products.length,
+        itemBuilder: (context, index) {
+          return Card(
+            margin: EdgeInsets.all(10),
+            child: ListTile(
+              title: Text(products[index].name),
+              subtitle: Text("\$${products[index].price}"),
+              onTap: () async {
+                final result = await Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) =>
+                        ProductDetailScreen(product: products[index]),
+                  ),
+                );
+
+                if (result != null) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text(result)),
+                  );
+                }
+              },
+            ),
+          );
+        },
       ),
     );
   }
 }
 
-class DetailScreen extends StatelessWidget {
+
+class ProductDetailScreen extends StatelessWidget {
+  final Product product;
+
+  ProductDetailScreen({required this.product});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Detail Screen"),
-        backgroundColor: Colors.blue,
+        title: Text(product.name),
+        backgroundColor: const Color.fromARGB(255, 234, 152, 179),
       ),
       body: Padding(
-        padding: const EdgeInsets.all(20),
+        padding: const EdgeInsets.all(16),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Icon(
-              Icons.info,
-              size: 80,
-              color: Colors.blue,
-            ),
-
-            SizedBox(height: 20),
-
             Text(
-              "Welcome to the Detail Screen",
-              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-              textAlign: TextAlign.center,
+              product.description,
+              style: TextStyle(fontSize: 18),
             ),
-
             SizedBox(height: 10),
-
             Text(
-              "Here you can display any details you want like product info, user data, or more.",
+              "Price: \$${product.price}",
               style: TextStyle(fontSize: 16),
-              textAlign: TextAlign.center,
             ),
-
             SizedBox(height: 30),
-
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.blue,
-                padding: EdgeInsets.symmetric(horizontal: 30, vertical: 15),
+            Center(
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color.fromARGB(255, 222, 138, 166),
+                ),
+                child: Text("رجوع مع تأكيد"),
+                onPressed: () {
+                  Navigator.pop(
+                      context, "تم الرجوع من ${product.name}");
+                },
               ),
-              child: Text("Go Back"),
-              onPressed: () {
-                Navigator.pop(context);
-              },
             ),
           ],
         ),
